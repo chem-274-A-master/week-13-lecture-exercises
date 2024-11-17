@@ -7,7 +7,9 @@ To use your script, you should be able to go to the Shell tab on the right and t
 
 python main.py FILENAME WORD
 
-to get the number of times a word occurred. 
+to get the number of times a word occurred. You can use the provided file file1.txt for testing.
+
+
 Hint: The test for this file counts words which are parts of other words 
 (ex 'laws' will count for 'law', but "Law" would not count (case sensitive)). 
 In real life, you would want to be more careful about word/character counting, but we aren't going that far into text processing.

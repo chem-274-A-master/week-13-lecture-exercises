@@ -9,10 +9,10 @@ To use your script, you should be able to go to the Shell tab on the right and t
 
 python main.py FILENAME
 
-The test is for file1.txt, provided in this replit.
+The test is for file1.txt, provided in this folder.
 """
 
-def num_words(string):
+def num_words(string: str) -> int:
   """Split a string into words using whitespace."""
   words = string.split()
 
