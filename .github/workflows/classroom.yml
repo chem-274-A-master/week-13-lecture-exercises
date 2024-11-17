@@ -1,0 +1,68 @@
+name: Autograding Tests
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install dependencies
+        run: |
+          pip install pytest
+          pip install numpy
+
+      - name: EnvironmentVariables Test
+        id: environmentvariables
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: EnvironmentVariables
+          command: pytest -vk "test_EnvironmentVariables"
+          timeout: 20
+          max-score: 1
+
+      - name: CommandLineScript Test
+        id: commandlinescript
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: CommandLineScript
+          command: pytest -vk "test_CommandLineScript"
+          timeout: 20
+          max-score: 1
+
+      - name: ArgparseScript Test
+        id: argparsescript
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: ArgparseScript
+          command: pytest -vk "test_ArgparseScript"
+          timeout: 20
+          max-score: 1
+
+      - name: WordCount Test
+        id: wordcount
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: WordCount
+          command: pytest -vk "test_WordCount"
+          timeout: 20
+          max-score: 1
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          ENVIRONMENTVARIABLES_RESULTS: "${{steps.environmentvariables.outputs.result}}"
+          COMMANDLINESCRIPT_RESULTS: "${{steps.commandlinescript.outputs.result}}"
+          ARGPARSESCRIPT_RESULTS: "${{steps.argparsescript.outputs.result}}"
+          WORDCOUNT_RESULTS: "${{steps.wordcount.outputs.result}}"
+        with:
+          runners: environmentvariables,commandlinescript,argparsescript,wordcount
