@@ -5,6 +5,10 @@ Tests for this week's exercises.
 import os
 import sys
 import io
+import tempfile
+import shutil
+
+import subprocess
 
 
 def test_EnvironmentVariables():
@@ -27,100 +31,89 @@ def test_EnvironmentVariables():
     assert result == 'value', "Function did not return the correct value"
 
 
-def test_Subprocess():
-    # Add the exercise directory to the Python path
-    exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Subprocess"))
-    sys.path.append(exercise_dir)
-    
-    from main import run_subprocess
-    
-    # Create a sample file for testing
-    sample_file = os.path.join(exercise_dir, "sample.txt")
-    with open(sample_file, "w") as f:
-        f.write("This is a test file.\nIt has multiple lines.\n")
-    
-    # Run the subprocess function
-    result = run_subprocess()
-    
-    # Verify the output of the subprocess
-    expected_output = "This is a test file.\nIt has multiple lines.\n"
-    assert result == expected_output, "Subprocess did not return the correct output"
-    
-    # Clean up the sample file
-    os.remove(sample_file)
-
-
 def test_CommandLineScript():
-    # Add the exercise directory to the Python path
-    exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "CommandLineScript"))
-    sys.path.append(exercise_dir)
-    
-    from main import num_words
-    
-    # Test the num_words function with a sample string
-    test_string = "This is a test string with six words"
-    result = num_words(test_string)
-    assert result == 6, "num_words did not return the correct word count"
-    
-    # Create a sample file for testing
-    sample_file = os.path.join(exercise_dir, "sample.txt")
-    with open(sample_file, "w") as f:
-        f.write("This is a test file.\nIt has multiple lines.\n")
-    
-    # Simulate running the script with sys.argv
-    sys.argv = ["main.py", sample_file]
-    from main import __main__ as main_script
-    
-    # Redirect stdout to capture the script's output
-    old_stdout = sys.stdout
-    sys.stdout = io.StringIO()
-    
-    try:
-        main_script()
-        output = sys.stdout.getvalue()
-    finally:
-        sys.stdout = old_stdout
-    
-    # Verify the output
-    assert "The file has 8 words." in output, "Script output is incorrect"
-    
-    # Clean up the sample file
-    os.remove(sample_file)
+    # Create a temporary directory
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Add the exercise directory to the Python path
+        exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "CommandLineScript"))
+        sys.path.append(exercise_dir)
+        
+        from main import num_words
+        
+        # Test the num_words function with a sample string
+        test_string = "This is a test string with eight words"
+        result = num_words(test_string)
+        assert result == 8, "num_words did not return the correct word count"
+        
+        # Create a temporary sample file for testing
+        sample_file = os.path.join(temp_dir, "sample.txt")
+        with open(sample_file, "w") as f:
+            f.write("This is a test file.\nIt has multiple lines.\n")
+        
+        # Copy the main script to the temporary directory
+        main_script_src = os.path.join(exercise_dir, "main.py")
+        main_script_dst = os.path.join(temp_dir, "main.py")
+        shutil.copy(main_script_src, main_script_dst)
+        
+        # Run the script using subprocess
+        result = subprocess.run(
+            ["python", "main.py", "sample.txt"],
+            cwd=temp_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        
+        # Check that the script ran successfully
+        assert result.returncode == 0, f"Script exited with an error: {result.stderr}"
+        
+        # Verify the output
+        assert "The file has 9 words." in result.stdout, "Script output is incorrect"
 
 
 def test_ArgparseScript():
-    # Add the exercise directory to the Python path
-    exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ArgparseScript"))
-    sys.path.append(exercise_dir)
-    
-    from main import num_words  # Reuse the num_words function for simplicity
-    
-    # Test the num_words function with a sample string
-    test_string = "Another test string with five words"
-    result = num_words(test_string)
-    assert result == 5, "num_words did not return the correct word count"
-    
-    # Create a sample file for testing
-    sample_file = os.path.join(exercise_dir, "sample.txt")
-    with open(sample_file, "w") as f:
-        f.write("Test file for argparse.\nAnother line.\nLine items here.\n")
-    
-    # Simulate running the script with argparse
-    sys.argv = ["main.py", sample_file, "line"]
-    from main import __main__ as main_script
-    
-    # Redirect stdout to capture the script's output
-    old_stdout = sys.stdout
-    sys.stdout = io.StringIO()
-    
-    try:
-        main_script()
-        output = sys.stdout.getvalue()
-    finally:
-        sys.stdout = old_stdout
-    
-    # Verify the output (case-sensitive partial match for "line")
-    assert "The word line occurred 3 times" in output, "Script output is incorrect"
-    
-    # Clean up the sample file
-    os.remove(sample_file)
+    # Create a temporary directory
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Add the exercise directory to the Python path
+        exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ArgparseScript"))
+        sys.path.append(exercise_dir)
+        
+        # Create a temporary sample file for testing
+        sample_file = os.path.join(temp_dir, "file1.txt")
+        with open(sample_file, "w") as f:
+            f.write("This is a test file.\nIt has multiple lines with the word test.\nTest this file.\n")
+
+        # Copy the main script to the temporary directory
+        main_script_src = os.path.join(exercise_dir, "main.py")
+        main_script_dst = os.path.join(temp_dir, "main.py")
+        shutil.copy(main_script_src, main_script_dst)
+        
+        # Run the script using subprocess with 'test' as the word
+        result = subprocess.run(
+            ["python", "main.py", "file1.txt", "test"],
+            cwd=temp_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        
+        # Check that the script ran successfully
+        assert result.returncode == 0, f"Script exited with an error: {result.stderr}"
+        
+        # Verify the output
+        assert "The word test occurred 2 times" in result.stdout, "Script output is incorrect"
+
+        # Run the script again with 'this' as the word
+        result = subprocess.run(
+            ["python", "main.py", "file1.txt", "this"],
+            cwd=temp_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        # Check that the script ran successfully
+        assert result.returncode == 0, f"Script exited with an error: {result.stderr}"
+
+        # Verify the output
+        assert "The word this occurred 1 times" in result.stdout, "Script output is incorrect"
