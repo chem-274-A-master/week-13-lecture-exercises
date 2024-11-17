@@ -48,12 +48,12 @@ jobs:
           timeout: 20
           max-score: 1
 
-      - name: WordCount Test
-        id: wordcount
+      - name: Subprocess Test
+        id: Subprocess
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: WordCount
-          command: pytest -vk "test_WordCount"
+          test-name: Subprocess
+          command: pytest -vk "test_Subprocess"
           timeout: 20
           max-score: 1
 
@@ -63,6 +63,6 @@ jobs:
           ENVIRONMENTVARIABLES_RESULTS: "${{steps.environmentvariables.outputs.result}}"
           COMMANDLINESCRIPT_RESULTS: "${{steps.commandlinescript.outputs.result}}"
           ARGPARSESCRIPT_RESULTS: "${{steps.argparsescript.outputs.result}}"
-          WORDCOUNT_RESULTS: "${{steps.wordcount.outputs.result}}"
+          Subprocess_RESULTS: "${{steps.Subprocess.outputs.result}}"
         with:
-          runners: environmentvariables,commandlinescript,argparsescript,wordcount
+          runners: environmentvariables,commandlinescript,argparsescript,subprocess
