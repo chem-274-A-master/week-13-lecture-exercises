@@ -11,6 +11,7 @@ import shutil
 import subprocess
 
 
+
 def test_EnvironmentVariables():
     # Add the exercise directory to the Python path
     exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "EnvironmentVariables"))
@@ -117,3 +118,25 @@ def test_ArgparseScript():
 
         # Verify the output
         assert "The word this occurred 1 times" in result.stdout, "Script output is incorrect"
+
+def test_Subprocess():
+    # Add the exercise directory to the Python path
+    exercise_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Subprocess"))
+    sys.path.append(exercise_dir)
+    
+    from main import run_subprocess
+    
+    # Create a sample file for testing
+    sample_file = os.path.join(exercise_dir, "sample.txt")
+    with open(sample_file, "w") as f:
+        f.write("This is a test file.\nIt has multiple lines.\n")
+    
+    # Run the subprocess function
+    result = run_subprocess(sample_file)
+    
+    # Verify the output of the subprocess
+    expected_output = "This is a test file.\nIt has multiple lines.\n"
+    assert result == expected_output, "Subprocess did not return the correct output"
+    
+    # Clean up the sample file
+    os.remove(sample_file)
