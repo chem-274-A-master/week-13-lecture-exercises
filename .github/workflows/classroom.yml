@@ -49,7 +49,7 @@ jobs:
           max-score: 1
 
       - name: Subprocess Test
-        id: Subprocess
+        id: subprocess
         uses: classroom-resources/autograding-command-grader@v1
         with:
           test-name: Subprocess
@@ -63,6 +63,6 @@ jobs:
           ENVIRONMENTVARIABLES_RESULTS: "${{steps.environmentvariables.outputs.result}}"
           COMMANDLINESCRIPT_RESULTS: "${{steps.commandlinescript.outputs.result}}"
           ARGPARSESCRIPT_RESULTS: "${{steps.argparsescript.outputs.result}}"
-          Subprocess_RESULTS: "${{steps.Subprocess.outputs.result}}"
+          SUBPROCESS_RESULTS: "${{steps.Subprocess.outputs.result}}"
         with:
           runners: environmentvariables,commandlinescript,argparsescript,subprocess
